@@ -223,4 +223,54 @@ class FunSetSuite extends FunSuite {
       assert(result2)
     }
   }
+
+  test("Forall odd numbers") {
+    new TestSets {
+      val set = union(union(union(s1, s2), s3), s4)
+      val result = forall(set, n => n % 2 != 0)
+      assert(!result)
+
+      val set2 = union(union(union(s1, s3), s5), s7)
+      val result2 = forall(set2, n => n % 2 != 0)
+      assert(result2)
+    }
+  }
+
+  test("Exist one odd number in the set") {
+    new TestSets {
+      val set = union(union(union(s2, s4), s3), s6)
+      val result = exists(set, x => x % 2 != 0)
+      assert(result)
+    }
+  }
+
+  test("Exist one even number in the set") {
+    new TestSets {
+      val set = union(union(union(s1, s3), s5), s7)
+      val result = exists(set, x => x % 2 == 0)
+      assert(!result)
+    }
+  }
+
+  test("Exist one number divisible by it self that results 1") {
+    new TestSets {
+      val set = union(union(union(s2, s4), s3), s6)
+      val result = exists(set, x => x / x == 1)
+      assert(result)
+    }
+  }
+
+  test("Map x to x * x") {
+    new TestSets {
+      val set = union(union(union(s1, s2), s3), s4)
+      val result = map(set, x => x * x)
+
+      printSet(result)
+
+      assert(contains(result, 1))
+      assert(contains(result, 4))
+      assert(contains(result, 9))
+      assert(contains(result, 16))
+    }
+  }
 }
