@@ -5,8 +5,8 @@ package objsets
   */
 class Tweet(val user: String, val text: String, val retweets: Int) {
   override def toString: String =
-    "User: " + user + "\n" +
-      "Text: " + text + " [" + retweets + "]"
+    //"User: " + user + "\n" +
+      "Text: " + text + " [" + retweets + "]\n"
 }
 
 /**
@@ -128,12 +128,23 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def filter(p: Tweet => Boolean): TweetSet = filterAcc(p, this)
 
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
-    if (p(elem)) new NonEmpty(elem, left.filter(p), right.filter(p))
-    else {
-      left.filter(p)
-      right.filter(p)
+
+    print(elem)
+    println(" *** ")
+    acc.foreach(t => print(t + "  "))
+    print(" +++ ")
+
+    if (p(elem)) {
+      println(" -> true " + acc)
+      new NonEmpty(elem, left.filter(p), right.filter(p))
+    } else {
+      println(" -> false " + acc)
+      right.filterAcc(p, left.filter(p))
     }
+
   }
+
+  override def toString = elem.text
 
   /**
     * The following methods are already implemented

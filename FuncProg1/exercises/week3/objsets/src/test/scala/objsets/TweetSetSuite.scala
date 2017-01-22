@@ -26,22 +26,39 @@ class TweetSetSuite extends FunSuite {
 
   def size(set: TweetSet): Int = asSet(set).size
 
-  test("filter: on empty set") {
-    new TestSets {
-      assert(size(set1.filter(tw => tw.user == "a")) === 0)
-      //set5.filter(t => t.retweets % 2 != 0).foreach(t => println(t))
-    }
-  }
+//  test("filter: on empty set") {
+//    new TestSets {
+//      assert(size(set1.filter(tw => tw.user == "a")) === 0)
+//      //set5.filter(t => t.retweets % 2 != 0).foreach(t => println(t))
+//    }
+//  }
+//
+//  test("filter: a on set5") {
+//    new TestSets {
+//      assert(size(set5.filter(tw => tw.user == "a")) === 1)
+//    }
+//  }
+//
+//  test("filter: 20 on set5") {
+//    new TestSets {
+//      assert(size(set5.filter(tw => tw.retweets == 20)) === 2)
+//    }
+//  }
 
-  test("filter: a on set5") {
+  test("filter: mine") {
     new TestSets {
-      assert(size(set5.filter(tw => tw.user == "a")) === 1)
-    }
-  }
+      val set = set1
+        .incl(new Tweet("7", "7", 7))
+        .incl(new Tweet("5", "5", 5))
+        .incl(new Tweet("9", "9", 9))
+        .incl(new Tweet("3", "3", 3))
+        .incl(new Tweet("1", "6", 6))
+        .incl(new Tweet("8", "8", 8))
 
-  test("filter: 20 on set5") {
-    new TestSets {
-      assert(size(set5.filter(tw => tw.retweets == 20)) === 2)
+//      set.foreach(x => println(x))
+
+      set.filter(t => t.retweets % 2 == 0)
+        .foreach(t => print(" " + t))
     }
   }
 
