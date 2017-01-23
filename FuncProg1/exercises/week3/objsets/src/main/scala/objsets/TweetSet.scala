@@ -76,7 +76,18 @@ abstract class TweetSet {
     * Question: Should we implment this method here, or should it remain abstract
     * and be implemented in the subclasses?
     */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = {
+
+    def recursion(subSet: TweetSet, list: TweetList): TweetList = {
+      if (subSet.isEmpty) list
+      else {
+        val tweet = subSet.mostRetweeted
+        recursion(subSet.remove(tweet), list.incl(new Cons(tweet, Nil)))
+      }
+    }
+
+    recursion(this, Nil)
+  }
 
   /**
     * The following methods are already implemented
@@ -186,6 +197,11 @@ trait TweetList {
   def tail: TweetList
 
   def isEmpty: Boolean
+
+  def incl(that: TweetList): TweetList = {
+    if (isEmpty) that
+    else new Cons(head, tail.incl(that))
+  }
 
   def foreach(f: Tweet => Unit): Unit =
     if (!isEmpty) {
