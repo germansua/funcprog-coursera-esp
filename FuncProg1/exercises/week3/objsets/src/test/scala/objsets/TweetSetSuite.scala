@@ -26,74 +26,75 @@ class TweetSetSuite extends FunSuite {
 
   def size(set: TweetSet): Int = asSet(set).size
 
-  //  test("filter: on empty set") {
-  //    new TestSets {
-  //      assert(size(set1.filter(tw => tw.user == "a")) === 0)
-  //    }
-  //  }
-  //
-  //  test("filter: a on set5") {
-  //    new TestSets {
-  //      assert(size(set5.filter(tw => tw.user == "a")) === 1)
-  //    }
-  //  }
-  //
-  //  test("filter: 20 on set5") {
-  //    new TestSets {
-  //      assert(size(set5.filter(tw => tw.retweets == 20)) === 2)
-  //    }
-  //  }
-  //
-  //  test("filter: mine") {
-  //    new TestSets {
-  //      val set = set1
-  //        .incl(new Tweet("7", "7", 7))
-  //        .incl(new Tweet("5", "5", 5))
-  //        .incl(new Tweet("9", "9", 9))
-  //        .incl(new Tweet("3", "3", 3))
-  //        .incl(new Tweet("1", "6", 6))
-  //        .incl(new Tweet("8", "8", 8))
-  //
-  //      println("Even numbers: ")
-  //      set.filter(t => t.retweets % 2 == 0)
-  //        .foreach(t => print(" " + t))
-  //
-  //      println("\nOdd numbers: ")
-  //      set.filter(t => t.retweets % 2 != 0)
-  //        .foreach(t => print(" " + t))
-  //    }
-  //  }
-  //
-  //  test("union: set4c and set4d") {
-  //    new TestSets {
-  //      assert(size(set4c.union(set4d)) === 4)
-  //    }
-  //  }
-  //
-  //  test("union: with empty set (1)") {
-  //    new TestSets {
-  //      assert(size(set5.union(set1)) === 4)
-  //    }
-  //  }
-  //
-  //  test("union: with empty set (2)") {
-  //    new TestSets {
-  //      assert(size(set1.union(set5)) === 4)
-  //    }
-  //  }
-  //
-  //  test("mostRetweeted: mine") {
-  //    new TestSets {
-  //      val set = set1
-  //        .incl(new Tweet("7", "7", 7))
-  //        .incl(new Tweet("5", "5", 5))
-  //        .incl(new Tweet("9", "9", 9))
-  //        .incl(new Tweet("3", "3", 3))
-  //        .incl(new Tweet("1", "6", 6))
-  //        .incl(new Tweet("8", "8", 8))
-  //      println("mostRetweeted: " + set.mostRetweeted)
-  //    }
-  //  }
+
+  test("filter: on empty set") {
+    new TestSets {
+      assert(size(set1.filter(tw => tw.user == "a")) === 0)
+    }
+  }
+
+  test("filter: a on set5") {
+    new TestSets {
+      assert(size(set5.filter(tw => tw.user == "a")) === 1)
+    }
+  }
+
+  test("filter: 20 on set5") {
+    new TestSets {
+      assert(size(set5.filter(tw => tw.retweets == 20)) === 2)
+    }
+  }
+
+  test("filter: mine") {
+    new TestSets {
+      val set = set1
+        .incl(new Tweet("7", "7", 7))
+        .incl(new Tweet("5", "5", 5))
+        .incl(new Tweet("9", "9", 9))
+        .incl(new Tweet("3", "3", 3))
+        .incl(new Tweet("1", "6", 6))
+        .incl(new Tweet("8", "8", 8))
+
+      println("Even numbers: ")
+      set.filter(t => t.retweets % 2 == 0)
+        .foreach(t => print(" " + t))
+
+      println("\nOdd numbers: ")
+      set.filter(t => t.retweets % 2 != 0)
+        .foreach(t => print(" " + t))
+    }
+  }
+
+  test("union: set4c and set4d") {
+    new TestSets {
+      assert(size(set4c.union(set4d)) === 4)
+    }
+  }
+
+  test("union: with empty set (1)") {
+    new TestSets {
+      assert(size(set5.union(set1)) === 4)
+    }
+  }
+
+  test("union: with empty set (2)") {
+    new TestSets {
+      assert(size(set1.union(set5)) === 4)
+    }
+  }
+
+  test("mostRetweeted: mine") {
+    new TestSets {
+      val set = set1
+        .incl(new Tweet("7", "7", 7))
+        .incl(new Tweet("5", "5", 5))
+        .incl(new Tweet("9", "9", 9))
+        .incl(new Tweet("3", "3", 3))
+        .incl(new Tweet("1", "6", 6))
+        .incl(new Tweet("8", "8", 8))
+      println("mostRetweeted: " + set.mostRetweeted)
+    }
+  }
 
   test("descending: mine") {
     new TestSets {
@@ -113,6 +114,18 @@ class TweetSetSuite extends FunSuite {
       val trends = set5.descendingByRetweet
       assert(!trends.isEmpty)
       assert(trends.head.user == "a" || trends.head.user == "b")
+    }
+  }
+
+  test("Number4 : mine") {
+    new TestSets {
+      val set = set1
+        .incl(new Tweet("1", "android is a operating system", 1))
+        .incl(new Tweet("2", "iOS", 2))
+      val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
+
+      lazy val googleTweets: TweetSet = set.filter(tweet => google.exists(s => tweet.text.contains(s)))
+      googleTweets.foreach(t => println(t))
     }
   }
 }
