@@ -29,26 +29,29 @@ class AnagramsSuite extends FunSuite {
   }
 
 
-  //  test("sentenceOccurrences: abcd e") {
-  //    assert(sentenceOccurrences(List("abcd", "e")) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)))
+  test("sentenceOccurrences: abcd e") {
+    assert(sentenceOccurrences(List("abcd", "e")) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)))
+  }
+
+
+  //  test("my dictionaryByOccurrences.get: eat") {
+  //    println(dictionaryByOccurrences)
   //  }
-  //
-  //
-  //  test("dictionaryByOccurrences.get: eat") {
-  //    assert(dictionaryByOccurrences.get(List(('a', 1), ('e', 1), ('t', 1))).map(_.toSet) === Some(Set("ate", "eat", "tea")))
-  //  }
-  //
-  //
-  //  test("word anagrams: married") {
-  //    assert(wordAnagrams("married").toSet === Set("married", "admirer"))
-  //  }
-  //
-  //  test("word anagrams: player") {
-  //    assert(wordAnagrams("player").toSet === Set("parley", "pearly", "player", "replay"))
-  //  }
-  //
-  //
-  //
+
+  test("dictionaryByOccurrences.get: eat") {
+    assert(dictionaryByOccurrences.get(List(('a', 1), ('e', 1), ('t', 1))).map(_.toSet) === Some(Set("ate", "eat", "tea")))
+  }
+
+
+  test("word anagrams: married") {
+    assert(wordAnagrams("married").toSet === Set("married", "admirer"))
+  }
+
+  test("word anagrams: player") {
+    assert(wordAnagrams("player").toSet === Set("parley", "pearly", "player", "replay"))
+  }
+
+
   //  test("subtract: lard - r") {
   //    val lard = List(('a', 1), ('d', 1), ('l', 1), ('r', 1))
   //    val r = List(('r', 1))
