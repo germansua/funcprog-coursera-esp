@@ -92,7 +92,27 @@ object Anagrams {
     * Note that the order of the occurrence list subsets does not matter -- the subsets
     * in the example above could have been displayed in some other order.
     */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    // Expand the occurrences
+    val expandedOccurrences = for ((letter, count) <- occurrences; index <- 1 to count) yield (letter, index)
+
+    // Combine the head with the rest elements
+    def combineHead(expanded: Occurrences): List[Occurrences] = expanded match {
+      case Nil => List()
+      case head :: Nil => List(expanded)
+      case head :: tail => for ((letter, count) <- tail; if letter != head._1) yield List(head, (letter, count))
+    }
+
+    // Actual combination of the occurrences
+    def combine(occurrences: Occurrences): List[Occurrences] = occurrences match {
+      case Nil => List()
+      case x :: Nil => combineHead(List(x))
+      case x :: xs => List(x) :: combineHead(occurrences) ::: combine(xs)
+    }
+
+    // Final result
+    List() :: combine(expandedOccurrences)
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
     *
