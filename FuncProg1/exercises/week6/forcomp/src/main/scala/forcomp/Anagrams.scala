@@ -124,7 +124,22 @@ object Anagrams {
     * Note: the resulting value is an occurrence - meaning it is sorted
     * and has no zero-entries.
     */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+
+    // Subtract 2 pairs
+    def subtractPairs(x: (Char, Int), y: (Char, Int)): (Char, Int) = {
+      if (x._1 == y._1) (x._1, x._2 - y._2)
+      else x
+    }
+
+    // Subtract a pair from a Map
+    def subtractMapPair(map: Map[Char, Int], pair: (Char, Int)): Map[Char, Int] = {
+      val newPair = subtractPairs((pair._1, map.apply(pair._1)), pair)
+      map.updated(newPair._1, newPair._2)
+    }
+
+    y.foldLeft(x.toMap)((acc, element) => subtractMapPair(acc, element)).toList.filter(pair => pair._2 > 0).sorted
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
     *
