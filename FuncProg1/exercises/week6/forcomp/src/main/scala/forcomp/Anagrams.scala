@@ -59,7 +59,7 @@ object Anagrams {
     *
     */
   lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
-    dictionary.groupBy(w => wordOccurrences(w))
+    dictionary.groupBy(w => wordOccurrences(w)) withDefaultValue List()
   }
 
   /** Returns all the anagrams of a given word. */
@@ -94,24 +94,20 @@ object Anagrams {
     */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
     // Expand the occurrences
-    val expandedOccurrences = for ((letter, count) <- occurrences; index <- 1 to count) yield (letter, index)
+    val expanded: Occurrences = for ((letter, count) <- occurrences; index <- 1 to count) yield (letter, index)
 
-    // Combine the head with the rest elements
-    def combineHead(expanded: Occurrences): List[Occurrences] = expanded match {
-      case Nil => List()
-      case head :: Nil => List(expanded)
-      case head :: tail => for ((letter, count) <- tail; if letter != head._1) yield List(head, (letter, count))
+    def filterFuc(occurrences: Occurrences): Boolean = {
+      !occurrences.tail.exists(pair => pair._1 == occurrences.head._1)
     }
 
-    // Actual combination of the occurrences
-    def combine(occurrences: Occurrences): List[Occurrences] = occurrences match {
-      case Nil => List()
-      case x :: Nil => combineHead(List(x))
-      case x :: xs => List(x) :: combineHead(occurrences) ::: combine(xs)
+    // Get combinations
+    def combine(size: Int, expanded: Occurrences): List[Occurrences] = {
+      val range = (1 to size)
+      range.flatMap(index => expanded.combinations(index)).toList.filter(expanded => filterFuc(expanded))
     }
 
     // Final result
-    List() :: combine(expandedOccurrences)
+    List() :: combine(occurrences.size, expanded)
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
@@ -181,5 +177,19 @@ object Anagrams {
     *
     * Note: There is only one anagram of an empty sentence.
     */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+
+    def innerSentenceAnagrams(occurrences: Occurrences): List[Sentence] = {
+      if (occurrences.isEmpty) List(List())
+      else {
+        for {
+          combinations <- combinations(occurrences)
+          words <- dictionaryByOccurrences(combinations)
+          rest <- innerSentenceAnagrams(subtract(occurrences, combinations))
+        } yield words :: rest
+      }
+    }
+
+    innerSentenceAnagrams(sentenceOccurrences(sentence))
+  }
 }
