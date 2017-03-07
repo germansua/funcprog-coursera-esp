@@ -29,10 +29,8 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   property("min of two elements") = forAll { (a1: A, a2: A) =>
-    (a1 < a2) ==> {
       val h = insert(a2, insert(a1, empty))
-      findMin(h) == a1
-    }
+      findMin(h) == a1.min(a2)
   }
 
   property("min of three elements") = forAll { (a1: A, a2: A, a3: A) =>
@@ -53,11 +51,9 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   property("min of two heaps of one element") = forAll { (a1: A, a2: A) =>
-    (a1 < a2) ==> {
       val h1 = insert(a1, empty)
       val h2 = insert(a2, empty)
-      findMin(meld(h1, h2)) == a1
-    }
+      findMin(meld(h1, h2)) == a1.min(a2)
   }
 
   property("delete min of two") = forAll { (a1: A, a2: A) =>
@@ -72,5 +68,16 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
   property("min of two heaps") = forAll { (h1: H, h2: H) =>
     findMin(meld(h1, h2)) == scala.math.min(findMin(h1), findMin(h2))
+  }
+
+  property("compare two meld heaps") = forAll { (h1: H, h2: H) =>
+    def minSorted(h: H): List[A] = {
+      if (isEmpty(h)) List()
+      else findMin(h) :: minSorted(deleteMin(h))
+    }
+
+    val m1 = meld(h1, h2)
+    val m2 = meld(deleteMin(h1), insert(findMin(h1), h2))
+    minSorted(m1) == minSorted(m2)
   }
 }
