@@ -46,9 +46,7 @@ object Extraction {
         Timestamp.valueOf(LocalDate.of(year, joinRow.getAs[Int]("month"), joinRow.getAs[Int]("day")).atStartOfDay),
         // LocalDate.of(year, joinRow.getAs[Int]("month"), joinRow.getAs[Int]("day")), This because the "No Encoder found for java.time.LocalDate"
         Location(joinRow.getAs[Double]("latitude"), joinRow.getAs[Double]("longitude")),
-        fromFahrenheitToCelsius(joinRow.getAs[Double]("temperature"))
-      )
-      )
+        fromFahrenheitToCelsius(joinRow.getAs[Double]("temperature"))))
       .collect
       .map(values => (values._1.toInstant.atZone(ZoneId.systemDefault()).toLocalDate, values._2, values._3))
   }
@@ -73,15 +71,13 @@ object Extraction {
       .agg(
         'Year,
         'Location,
-        avg('Temperature).as("Temperature")
-      )
+        avg('Temperature).as("Temperature"))
       .select('Location.as[Location], 'Temperature.as[Temperature])
       .collect()
   }
 
   private def readStations(stationsFile: String): Dataset[Station] = {
     val stationsFilePath = Paths.get(getClass.getResource(stationsFile).toURI).toString
-    // spark.sparkContext.textFile()
     spark
       .read
       .option("header", value = false)
