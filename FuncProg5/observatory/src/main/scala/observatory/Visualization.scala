@@ -47,13 +47,20 @@ object Visualization {
     // P: Power function
     // zp = sum( zi / pow(di, P) ) / sum( 1 / pow(di, P) )
 
-    def calculateAccumulators(values: Iterable[(Double, Temperature)],
-                              upperAcc: Double, lowerAcc: Double): (Double, Double) = values match {
-      case x :: xs => calculateAccumulators(xs, upperAcc + (x._2 / pow(x._1, 2)), lowerAcc + 1 / pow(x._1, 2))
-      case Nil => (upperAcc, lowerAcc)
+//    def calculateAccumulators(values: Iterable[(Double, Temperature)],
+//                              upperAcc: Double, lowerAcc: Double): (Double, Double) = values match {
+//      case x :: xs => calculateAccumulators(xs, upperAcc + (x._2 / pow(x._1, 2)), lowerAcc + 1 / pow(x._1, 2))
+//      case Nil => (upperAcc, lowerAcc)
+//    }
+//    val result = calculateAccumulators(values, 0, 0)
+
+    def calculateAccumulators(values: Iterable[(Double, Temperature)]): (Double, Double) = {
+      values.par.foldLeft((0.0, 0.0)) {
+        (acc: (Double, Double), x: (Double, Temperature)) => (acc._1 + (x._2 / pow(x._1, 2)), acc._2 + 1 / pow(x._1, 2))
+      }
     }
 
-    val result = calculateAccumulators(values, 0, 0)
+    val result = calculateAccumulators(values)
     result._1 / result._2
   }
 
