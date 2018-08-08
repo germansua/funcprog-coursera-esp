@@ -47,12 +47,12 @@ object Visualization {
     // P: Power function
     // zp = sum( zi / pow(di, P) ) / sum( 1 / pow(di, P) )
 
-//    def calculateAccumulators(values: Iterable[(Double, Temperature)],
-//                              upperAcc: Double, lowerAcc: Double): (Double, Double) = values match {
-//      case x :: xs => calculateAccumulators(xs, upperAcc + (x._2 / pow(x._1, 2)), lowerAcc + 1 / pow(x._1, 2))
-//      case Nil => (upperAcc, lowerAcc)
-//    }
-//    val result = calculateAccumulators(values, 0, 0)
+    //    def calculateAccumulators(values: Iterable[(Double, Temperature)],
+    //                              upperAcc: Double, lowerAcc: Double): (Double, Double) = values match {
+    //      case x :: xs => calculateAccumulators(xs, upperAcc + (x._2 / pow(x._1, 2)), lowerAcc + 1 / pow(x._1, 2))
+    //      case Nil => (upperAcc, lowerAcc)
+    //    }
+    //    val result = calculateAccumulators(values, 0, 0)
 
     def calculateAccumulators(values: Iterable[(Double, Temperature)]): (Double, Double) = {
       values.par.foldLeft((0.0, 0.0)) {
@@ -84,7 +84,49 @@ object Visualization {
     * @return The color that corresponds to `value`, according to the color scale defined by `points`
     */
   def interpolateColor(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
-    ???
+    points.
+      find(_._1 == value)
+      .map(_._2)
+      .getOrElse(calculateColorInterpolation(points, value))
+  }
+
+  def calculateColorInterpolation(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
+    //var limits = calculateLimits(points, value)
+    //var lowerLimit = limits._1
+    //var upperLimit = limits._2
+
+    val (lowerLimit, upperLimit) = calculateLimits(points, value)
+    calculateLinearInterpolation(lowerLimit, upperLimit, value)
+  }
+
+  def calculateLimits(points: Iterable[(Temperature, Color)], value: Temperature): ((Temperature, Color), (Temperature, Color)) = {
+    var iters = points.par.partition(item => item._1 < value) // HERE!!!!
+
+    var lowerLimit = if (!iters._1.isEmpty) iters._1.reduce(reduceMaxTuple) else (0.0, Color(0, 0, 0))
+    var upperLimit = if (!iters._2.isEmpty) iters._2.reduce(reduceMinTuple) else (0.0, Color(0, 0, 0))
+
+    (lowerLimit, upperLimit)
+  }
+
+  def calculateLinearInterpolation(lowerLimit: (Temperature, Color), upperLimit: (Temperature, Color), value: Temperature): Color = {
+    var red:Int = ((upperLimit._2.red - lowerLimit._2.red) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.red).toInt
+    var green:Int = ((upperLimit._2.green - lowerLimit._2.green) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.green).toInt
+    var blue:Int = ((upperLimit._2.blue - lowerLimit._2.blue) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.blue).toInt
+
+    Color(red, green, blue).sanitize
+  }
+
+  private def reduceMinTuple(tuple1: (Temperature, Color), tuple2: (Temperature, Color)): (Temperature, Color) = {
+    reduceTempColorTuples((a, b) => a < b)(tuple1, tuple2)
+  }
+
+  private def reduceMaxTuple(tuple1: (Temperature, Color), tuple2: (Temperature, Color)): (Temperature, Color) = {
+    reduceTempColorTuples((a, b) => a > b)(tuple1, tuple2)
+  }
+
+  private def reduceTempColorTuples(f: (Temperature, Temperature) => Boolean)
+                                   (tuple1: (Temperature, Color), tuple2: (Temperature, Color)): (Temperature, Color) = {
+    if (f(tuple1._1, tuple2._1)) tuple1 else tuple2
   }
 
   /**
@@ -96,4 +138,3 @@ object Visualization {
     ???
   }
 }
-

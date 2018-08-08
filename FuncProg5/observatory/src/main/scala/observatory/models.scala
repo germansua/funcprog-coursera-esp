@@ -38,5 +38,13 @@ case class CellPoint(x: Double, y: Double)
   * @param green Level of green, 0 ≤ green ≤ 255
   * @param blue Level of blue, 0 ≤ blue ≤ 255
   */
-case class Color(red: Int, green: Int, blue: Int)
+case class Color(red: Int, green: Int, blue: Int) {
 
+  def sanitize(): Color = Color(getValueInRange(red), getValueInRange(green), getValueInRange(blue))
+
+  private def getValueInRange(actual: Int): Int = {
+    if (actual < 0) 0
+    else if (actual > 255) 255
+    else actual
+  }
+}
