@@ -99,21 +99,33 @@ object Visualization {
     calculateLinearInterpolation(lowerLimit, upperLimit, value)
   }
 
-  def calculateLimits(points: Iterable[(Temperature, Color)], value: Temperature): ((Temperature, Color), (Temperature, Color)) = {
+  def calculateLimits(points: Iterable[(Temperature, Color)], value: Temperature): (Option[(Temperature, Color)], Option[(Temperature, Color)]) = {
     var iters = points.par.partition(item => item._1 < value) // HERE!!!!
 
-    var lowerLimit = if (!iters._1.isEmpty) iters._1.reduce(reduceMaxTuple) else (0.0, Color(0, 0, 0))
-    var upperLimit = if (!iters._2.isEmpty) iters._2.reduce(reduceMinTuple) else (0.0, Color(0, 0, 0))
+    var lowerLimit = if (!iters._1.isEmpty) Option(iters._1.reduce(reduceMaxTuple)) else Option.empty
+    var upperLimit = if (!iters._2.isEmpty) Option(iters._2.reduce(reduceMinTuple)) else Option.empty
 
     (lowerLimit, upperLimit)
   }
 
-  def calculateLinearInterpolation(lowerLimit: (Temperature, Color), upperLimit: (Temperature, Color), value: Temperature): Color = {
-    var red:Int = ((upperLimit._2.red - lowerLimit._2.red) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.red).toInt
-    var green:Int = ((upperLimit._2.green - lowerLimit._2.green) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.green).toInt
-    var blue:Int = ((upperLimit._2.blue - lowerLimit._2.blue) * (value - lowerLimit._1) / (upperLimit._1 - lowerLimit._1) + lowerLimit._2.blue).toInt
+  def calculateLinearInterpolation( lowerLimit: Option[(Temperature, Color)],
+                                    upperLimit: Option[(Temperature, Color)],
+                                    value: Temperature): Color = {
 
-    Color(red, green, blue).sanitize
+    if (lowerLimit.isEmpty) upperLimit.get._2
+    else if (upperLimit.isEmpty) lowerLimit.get._2
+    else {
+      val lowerLimitTemperature = lowerLimit.get._1
+      val lowerLimitColor = lowerLimit.get._2
+      val upperLimitTemperature = upperLimit.get._1
+      val upperLimitColor = upperLimit.get._2
+
+      val red:Int = ((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
+      val green:Int = ((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
+      val blue:Int = ((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
+
+      Color(red, green, blue).sanitize
+    }
   }
 
   private def reduceMinTuple(tuple1: (Temperature, Color), tuple2: (Temperature, Color)): (Temperature, Color) = {
