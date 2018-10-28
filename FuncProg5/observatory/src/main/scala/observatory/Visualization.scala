@@ -1,6 +1,6 @@
 package observatory
 
-import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.{Image, Pixel}
 
 import scala.math._
 
@@ -120,9 +120,9 @@ object Visualization {
       val upperLimitTemperature = upperLimit.get._1
       val upperLimitColor = upperLimit.get._2
 
-      val red:Int = ((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
-      val green:Int = ((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
-      val blue:Int = ((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
+      val red:Int = math.ceil((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
+      val green:Int = math.ceil((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
+      val blue:Int = math.ceil((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
 
       Color(red, green, blue).sanitize
     }
@@ -147,6 +147,9 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-    ???
+    var pixel = Pixel(0,0,0,0)
+    var arr:Array[Pixel] = Array()
+    for (i <- 0 to (360 * 180) - 1) arr :+ pixel
+    Image(360, 180, arr)
   }
 }

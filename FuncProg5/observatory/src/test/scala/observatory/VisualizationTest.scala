@@ -53,11 +53,25 @@ trait VisualizationTest extends FunSuite with Checkers {
 
     // println ( Visualization.calculateColorInterpolation(points, -5.0) )
 
-
-    var list = List((-69.83012893073845,Color(255,0,0)), (-55.93412100934578,Color(0,0,255)))
+    println("****************************************************************************")
+    var list = List((-69.83012893073845, Color(255, 0, 0)), (-55.93412100934578, Color(0, 0, 255)))
     var value = -45.93412100934578
+    println(Visualization.interpolateColor(list, value))
 
-    var c = Visualization.interpolateColor(list, value)
-    println(c)
+    println("****************************************************************************")
+    var list2 = List((1.0, Color(255, 0, 0)), (24.544260795451137, Color(0, 0, 255)))
+    var value2 = -9.0
+    println(Visualization.interpolateColor(list2, value2))
+
+    println("****************************************************************************")
+    println(math.ceil(127.5))
+  }
+
+  test("visualize") {
+    var img = Visualization.visualize(
+      List((Location(4.7110, 74.0721), -69.83012893073845), (Location(51.5074, 0.1278), -55.93412100934578)),
+      List((-69.83012893073845, Color(255, 0, 0)), (-55.93412100934578, Color(0, 0, 255)))
+    )
+    img.output(new java.io.File("/Users/gersua/Desktop/some-image.png"))
   }
 }
