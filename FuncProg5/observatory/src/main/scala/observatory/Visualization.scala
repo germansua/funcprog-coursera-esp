@@ -2,7 +2,6 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 
-import scala.collection.mutable.ArrayBuffer
 import scala.math._
 
 /**
@@ -101,10 +100,10 @@ object Visualization {
   }
 
   def calculateLimits(points: Iterable[(Temperature, Color)], value: Temperature): (Option[(Temperature, Color)], Option[(Temperature, Color)]) = {
-    var iters = points.par.partition(item => item._1 < value) // HERE!!!!
+    val iters = points.par.partition(item => item._1 < value) // HERE!!!!
 
-    var lowerLimit = if (!iters._1.isEmpty) Option(iters._1.reduce(reduceMaxTuple)) else Option.empty
-    var upperLimit = if (!iters._2.isEmpty) Option(iters._2.reduce(reduceMinTuple)) else Option.empty
+    val lowerLimit = if (!iters._1.isEmpty) Option(iters._1.reduce(reduceMaxTuple)) else Option.empty
+    val upperLimit = if (!iters._2.isEmpty) Option(iters._2.reduce(reduceMinTuple)) else Option.empty
 
     (lowerLimit, upperLimit)
   }
@@ -158,11 +157,11 @@ object Visualization {
       * create the image based on the Array
       */
 
-    var width = 360
-    var height = 180
-    var size = width * height
+    val width = 360
+    val height = 180
+    val size = width * height
 
-    var pixelsArray =
+    val pixelsArray =
       (0 until size)
         .map(i => fromXYLocationToGeoLocation(i, width, height))
         .map(location => predictTemperature(temperatures, location))
@@ -174,8 +173,8 @@ object Visualization {
   }
 
   def fromXYLocationToGeoLocation(index: Int, width: Int, height: Int): Location = {
-    var x = index % width
-    var y = math.floor(index / width).toInt
+    val x = index % width
+    val y = math.floor(index / width).toInt
     Location(height / 2 - y, x - width / 2)
   }
 }
