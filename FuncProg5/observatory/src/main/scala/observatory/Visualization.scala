@@ -2,6 +2,7 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 
+import scala.collection.mutable.ArrayBuffer
 import scala.math._
 
 /**
@@ -108,9 +109,9 @@ object Visualization {
     (lowerLimit, upperLimit)
   }
 
-  def calculateLinearInterpolation( lowerLimit: Option[(Temperature, Color)],
-                                    upperLimit: Option[(Temperature, Color)],
-                                    value: Temperature): Color = {
+  def calculateLinearInterpolation(lowerLimit: Option[(Temperature, Color)],
+                                   upperLimit: Option[(Temperature, Color)],
+                                   value: Temperature): Color = {
 
     if (lowerLimit.isEmpty) upperLimit.get._2
     else if (upperLimit.isEmpty) lowerLimit.get._2
@@ -120,9 +121,9 @@ object Visualization {
       val upperLimitTemperature = upperLimit.get._1
       val upperLimitColor = upperLimit.get._2
 
-      val red:Int = math.ceil((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
-      val green:Int = math.ceil((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
-      val blue:Int = math.ceil((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
+      val red: Int = math.ceil((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
+      val green: Int = math.ceil((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
+      val blue: Int = math.ceil((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
 
       Color(red, green, blue).sanitize
     }
@@ -147,9 +148,34 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-    var pixel = Pixel(0,0,0,0)
-    var arr:Array[Pixel] = Array()
-    for (i <- 0 to (360 * 180) - 1) arr :+ pixel
-    Image(360, 180, arr)
+
+    /**
+      * Create an array of the size of the image
+      * for each point(x, y) map it to a location
+      * for each location calculate the temperature
+      * for each temperature calculate the color interpolation
+      * map each color to a pixel
+      * create the image based on the Array
+      */
+
+    var width = 360
+    var height = 180
+    var size = width * height
+
+    var pixelsArray =
+      (0 until size)
+        .map(i => fromXYLocationToGeoLocation(i, width, height))
+        .map(location => predictTemperature(temperatures, location))
+        .map(temperature => interpolateColor(colors, temperature))
+        .map(_.toPixel())
+        .toArray
+
+    Image(width, height, pixelsArray)
+  }
+
+  def fromXYLocationToGeoLocation(index: Int, width: Int, height: Int): Location = {
+    var x = index % width
+    var y = math.floor(index / width).toInt
+    Location(height / 2 - y, x - width / 2)
   }
 }

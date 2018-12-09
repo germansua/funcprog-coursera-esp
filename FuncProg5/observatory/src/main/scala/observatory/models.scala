@@ -1,7 +1,10 @@
 package observatory
 
+import com.sksamuel.scrimage.{Pixel, RGBColor}
+
 /**
   * Introduced in Week 1. Represents a location on the globe.
+  *
   * @param lat Degrees of latitude, -90 ≤ lat ≤ 90
   * @param lon Degrees of longitude, -180 ≤ lon ≤ 180
   */
@@ -47,4 +50,6 @@ case class Color(red: Int, green: Int, blue: Int) {
     else if (current > 255) 255
     else current
   }
+
+  def toPixel(): Pixel = RGBColor(red, green, blue, 255).toPixel
 }
