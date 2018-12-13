@@ -91,16 +91,12 @@ object Visualization {
   }
 
   def calculateColorInterpolation(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
-    //var limits = calculateLimits(points, value)
-    //var lowerLimit = limits._1
-    //var upperLimit = limits._2
-
     val (lowerLimit, upperLimit) = calculateLimits(points, value)
     calculateLinearInterpolation(lowerLimit, upperLimit, value)
   }
 
   def calculateLimits(points: Iterable[(Temperature, Color)], value: Temperature): (Option[(Temperature, Color)], Option[(Temperature, Color)]) = {
-    val iters = points.par.partition(item => item._1 < value) // HERE!!!!
+    val iters = points.partition(item => item._1 < value) // HERE!!!!
 
     val lowerLimit = if (!iters._1.isEmpty) Option(iters._1.reduce(reduceMaxTuple)) else Option.empty
     val upperLimit = if (!iters._2.isEmpty) Option(iters._2.reduce(reduceMinTuple)) else Option.empty
@@ -120,9 +116,9 @@ object Visualization {
       val upperLimitTemperature = upperLimit.get._1
       val upperLimitColor = upperLimit.get._2
 
-      val red: Int = math.ceil((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
-      val green: Int = math.ceil((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
-      val blue: Int = math.ceil((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
+      val red: Int = math.round((upperLimitColor.red - lowerLimitColor.red) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.red).toInt
+      val green: Int = math.round((upperLimitColor.green - lowerLimitColor.green) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.green).toInt
+      val blue: Int = math.round((upperLimitColor.blue - lowerLimitColor.blue) * (value - lowerLimitTemperature) / (upperLimitTemperature - lowerLimitTemperature) + lowerLimitColor.blue).toInt
 
       Color(red, green, blue).sanitize
     }
@@ -147,7 +143,6 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-
     /**
       * Create an array of the size of the image
       * for each point(x, y) map it to a location
@@ -161,12 +156,14 @@ object Visualization {
     val height = 180
     val size = width * height
 
+//    val pixelsArray = (0 until size).map(_ => Color(0, 0, 0).toPixel()).toArray
+
     val pixelsArray =
       (0 until size)
         .map(i => fromXYLocationToGeoLocation(i, width, height))
         .map(location => predictTemperature(temperatures, location))
-        .map(temperature => interpolateColor(colors, temperature))
-        .map(_.toPixel())
+        .map(temperature => interpolateColor(colors, temperature).toPixel)
+//        .map(_ => Color(0, 0, 0).toPixel)
         .toArray
 
     Image(width, height, pixelsArray)
