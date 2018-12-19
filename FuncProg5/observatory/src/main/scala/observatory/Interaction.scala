@@ -25,7 +25,35 @@ object Interaction {
     * @return A 256×256 image showing the contents of the given tile
     */
   def tile(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)], tile: Tile): Image = {
-    ???
+    /**
+      * Calculate all the coordinates for the given tile from X and Y (256x256)
+      * for each coordinate, map the tile to a location (tileLocation)
+      * then, map the locations to temperatures (predictTemperature)
+      * them map the temperatures to colors (interpolateColor)
+      * then map the colors to pixels with alpha 127
+      * Then map to an Array
+      */
+
+    val width = 256
+    val height = 256
+    val size = width * height
+
+    def getTileByIndex(index: Int): Tile = {
+      val x = index % width
+      val y = math.floor(index / width).toInt
+      Tile(tile.x + x, tile.y + y, tile.zoom + 8)
+    }
+
+    val pixelsArray = (0 until size)
+      .par
+      .map(getTileByIndex)
+      .map(tileLocation)
+      .map(location => Visualization.predictTemperature(temperatures, location))
+      .map(temperature => Visualization.interpolateColor(colors, temperature).toPixel(127))
+      // .map(_ => Pixel(0, 0, 0, 0))
+      .toArray
+
+    Image(width, height, pixelsArray)
   }
 
   /**

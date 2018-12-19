@@ -51,5 +51,7 @@ case class Color(red: Int, green: Int, blue: Int) {
     else current
   }
 
-  def toPixel(): Pixel = RGBColor(red, green, blue, 255).toPixel
+  def toPixel(): Pixel = toPixel(255)
+
+  def toPixel(alpha: Int): Pixel = RGBColor(red, green, blue, alpha).toPixel
 }
