@@ -7,4 +7,8 @@ import scala.collection.concurrent.TrieMap
 
 trait InteractionTest extends FunSuite with Checkers {
 
+
+  test("generateTiles") {
+
+  }
 }
