@@ -20,7 +20,7 @@ object Manipulation {
 
     //    def gridLocToTemperature(gridLocation: GridLocation): Temperature = grid(gridLocation)
     //    gridLocToTemperature
-    (gridLocation) => grid(gridLocation)
+    gridLocation => grid(gridLocation)
   }
 
   /**
@@ -31,14 +31,13 @@ object Manipulation {
   def average(temperaturess: Iterable[Iterable[(Location, Temperature)]]): GridLocation => Temperature = {
     /**
       * Parallelize computing of grids for each year
-      * Calculate average value for each grid location value
+      * Calculate average value for each grid location value (reduce)
       * Cache the result
       * Return the function that gets the values from the cache
       */
-
-    temperaturess.par.map(makeGrid) // somehow reduce by gridlocation
-
-    ???
+    val size = temperaturess.size
+    val gridsPerYear = temperaturess.map(makeGrid)
+    gridLocation => gridsPerYear.map(_(gridLocation)).sum / size
   }
 
   /**
