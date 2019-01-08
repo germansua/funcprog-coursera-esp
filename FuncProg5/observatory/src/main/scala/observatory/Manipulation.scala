@@ -46,9 +46,23 @@ object Manipulation {
     * @return A grid containing the deviations compared to the normal temperatures
     */
   def deviation(temperatures: Iterable[(Location, Temperature)], normals: GridLocation => Temperature): GridLocation => Temperature = {
-    ???
+    /**
+      * Transform temperatures into (GridLocation, Temperature) pair
+      * Get the corresponding temperature with the GridLocation using normals
+      * Calculate de deviation
+      * return a new Function
+      */
+    def calculateDeviation(temperature: Temperature, normal: Temperature): Temperature = temperature - normal
+
+//    val deviations = temperatures
+//      .map(iter => (iter._1.toGridLocation, iter._2))
+//      .map(pair => (pair._1, pair._2, normals(pair._1)))
+//      .map(t3 => (t3._1, calculateDeviation(t3._2, t3._3)))
+//      .toMap
+//    gridLocation => deviations(gridLocation)
+
+      val temperaturesToCompare = makeGrid(temperatures)
+      gridLocation => calculateDeviation(temperaturesToCompare(gridLocation), normals(gridLocation))
   }
-
-
 }
 
